@@ -4,29 +4,15 @@ import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.RecyclerView
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import org.json.JSONArray
-
-
 
 
 //val nakami = db.collection("Travel").orderBy("title", Query.Direction.ASCENDING)
@@ -48,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         var bt4: Button = findViewById(R.id.bt4)
         var bt5: Button = findViewById(R.id.bt5)
         var bt6: Button = findViewById(R.id.bt6)
+
         val i = getSharedPreferences("i", Context.MODE_PRIVATE)
         val istore = i.getInt("i",Context.MODE_PRIVATE)
         val j = getSharedPreferences("j", Context.MODE_PRIVATE)
@@ -79,15 +66,13 @@ class MainActivity : AppCompatActivity() {
 
 
         tuika1.setOnClickListener {
-            var travel = Travel("empty", "empty")
+            var travel = Travel("empty", "empty","empty")
             var plan = "empty"
-            //travelList.add(travel)
             i.edit().putInt("i",i.getInt("i",0)+1).commit()
             if (i.getInt("i",0)==1) {
                 data1.edit().putString("data1", title.text.toString()).commit()
                 data1.getString("data1", "false")
                 addData(db, data1.getString("data1", "false").toString(), plan, travel)
-                //name1 = data1.getString("data1","false").toString()
                 frag1.edit().putBoolean("btn1", true).commit()
                 frag1.getBoolean("btn1", false)
                 bt1.text = data1.getString("data1", "false").toString()
@@ -109,7 +94,6 @@ class MainActivity : AppCompatActivity() {
                 data3.edit().putString("data3", title.text.toString()).commit()
                 data3.getString("data3", "false")
                 addData(db, data3.getString("data3", "false").toString(), "empty", travel)
-                //name1 = data1.getString("data2","false").toString()
                 frag3.edit().putBoolean("btn3", true).commit()
                 frag3.getBoolean("btn3", false)
                 bt3.text = data3.getString("data3", "false").toString()
@@ -120,7 +104,6 @@ class MainActivity : AppCompatActivity() {
                 data4.edit().putString("data4", title.text.toString()).commit()
                 data4.getString("data4", "false")
                 addData(db, data4.getString("data4", "false").toString(), "empty", travel)
-                //name1 = data1.getString("data4","false").toString()
                 frag4.edit().putBoolean("btn4", true).commit()
                 frag4.getBoolean("btn4", false)
                 bt4.text = data4.getString("data4", "false").toString()
@@ -131,7 +114,6 @@ class MainActivity : AppCompatActivity() {
                 data5.edit().putString("data5", title.text.toString()).commit()
                 data5.getString("data5", "false")
                 addData(db, data5.getString("data5", "false").toString(), "empty", travel)
-                //name1 = data1.getString("data4","false").toString()
                 frag5.edit().putBoolean("btn5", true).commit()
                 frag5.getBoolean("btn5", false)
                 bt5.text = data5.getString("data5", "false").toString()
@@ -142,7 +124,6 @@ class MainActivity : AppCompatActivity() {
                 data6.edit().putString("data6", title.text.toString()).commit()
                 data6.getString("data6", "false")
                 addData(db, data6.getString("data6", "false").toString(), "empty", travel)
-                //name1 = data1.getString("data6","false").toString()
                 frag6.edit().putBoolean("btn6", true).commit()
                 frag6.getBoolean("btn6", false)
                 bt6.text = data6.getString("data6", "false").toString()
@@ -154,6 +135,13 @@ class MainActivity : AppCompatActivity() {
                 AlertDialog.Builder(this) // FragmentではActivityを取得して生成
                     .setTitle("Error")
                     .setMessage("満杯になりました")
+                    .setPositiveButton("OK", null)
+                    .show()
+            }
+            if(title.text.equals("")){//文字が入力されなかったら
+                AlertDialog.Builder(this) // FragmentではActivityを取得して生成
+                    .setTitle("Error")
+                    .setMessage("入力されていません。")
                     .setPositiveButton("OK", null)
                     .show()
             }
@@ -228,7 +216,6 @@ class MainActivity : AppCompatActivity() {
             //resultが書き変わった時に実行される
             if (j.getInt("j",1) == 1 ) {
                 val intent = Intent(this@MainActivity, gamen2::class.java).apply {
-                    val (key, value) = getData(db, data1.getString("data1", "false").toString())//指定したコレクションの中に入っているドキュメント名のリストを返す
                     Log.d("ccccccccccc", data1.getString("data1", "false").toString())
                     putExtra("key1", data1.getString("data1", "false").toString())//計画名を渡す
                     putStringArrayListExtra("key2", it.first)
@@ -240,7 +227,6 @@ class MainActivity : AppCompatActivity() {
             }
             if (j.getInt("j",1) == 2 ) {
                 val intent = Intent(this@MainActivity, gamen2::class.java).apply {
-                    val (key, value) = getData(db, data2.getString("data2", "false").toString())//指定したコレクションの中に入っているドキュメント名のリストを返す
                     Log.d("ccccccccccc", data2.getString("data2", "false").toString())
                     putExtra("key1", data2.getString("data2", "false").toString())//計画名を渡す
                     putStringArrayListExtra("key2", it.first)
@@ -252,7 +238,6 @@ class MainActivity : AppCompatActivity() {
             }
             if (j.getInt("j",1)== 3 ) {
                 val intent = Intent(this@MainActivity, gamen2::class.java).apply {
-                    val (key, value) = getData(db, data3.getString("data3", "false").toString())//指定したコレクションの中に入っているドキュメント名のリストを返す
                     Log.d("ccccccccccc", data3.getString("data3", "false").toString())
                     putExtra("key1", data3.getString("data3", "false").toString())//計画名を渡す
                     putStringArrayListExtra("key2", it.first)
@@ -264,7 +249,6 @@ class MainActivity : AppCompatActivity() {
             }
             if (j.getInt("j",1) == 4 ) {
                 val intent = Intent(this@MainActivity, gamen2::class.java).apply {
-                    val (key, value) = getData(db, data4.getString("data4", "false").toString())//指定したコレクションの中に入っているドキュメント名のリストを返す
                     Log.d("ccccccccccc", data4.getString("data4", "false").toString())
                     putExtra("key1", data4.getString("data4", "false").toString())//計画名を渡す
                     putStringArrayListExtra("key2", it.first)
@@ -276,7 +260,6 @@ class MainActivity : AppCompatActivity() {
             }
             if (j.getInt("j",1)== 5 ) {
                 val intent = Intent(this@MainActivity, gamen2::class.java).apply {
-                    val (key, value) = getData(db, data5.getString("data5", "false").toString())//指定したコレクションの中に入っているドキュメント名のリストを返す
                     Log.d("ccccccccccc", data5.getString("data5", "false").toString())
                     putExtra("key1", data5.getString("data5", "false").toString())//計画名を渡す
                     putStringArrayListExtra("key2", it.first)
@@ -288,7 +271,6 @@ class MainActivity : AppCompatActivity() {
             }
             if (j.getInt("j",1)== 6 ) {
                 val intent = Intent(this@MainActivity, gamen2::class.java).apply {
-                    val (key, value) = getData(db, data6.getString("data6", "false").toString())//指定したコレクションの中に入っているドキュメント名のリストを返す
                     Log.d("ccccccccccc", data6.getString("data6", "false").toString())
                     putExtra("key1", data6.getString("data6", "false").toString())//計画名を渡す
                     putStringArrayListExtra("key2", it.first)
